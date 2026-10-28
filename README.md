@@ -9,10 +9,12 @@ Site estático em **HTML, CSS e JavaScript** para preencher e exportar orçament
 - Valor inicial de **R$ 100,00 por período**, editável; cálculo automático de valor total.
 - Campos do solicitante, telefone e data de emissão.
 - Prévia em formato A4, com cores, logomarca e texto do modelo original.
+- Personalização de **todos os textos do documento**: cabeçalho, telefones, e-mail, títulos, descrições, rótulos, cidade e rodapé; também é possível trocar a logomarca e a cor principal.
+- Ajuste automático do conteúdo para caber em **uma única página A4**. Se o texto for excessivo, a exportação pede que ele seja encurtado para preservar a leitura.
 - Exportação para **Word (.docx) editável** e **PDF (.pdf)**, diretamente no navegador.
 - Validação dos campos obrigatórios e da quantidade de dígitos de CPF/CNPJ.
 
-Os contatos da Clinimed, o texto do serviço, a cidade de Votuporanga e a logomarca permanecem fixos como no modelo.
+Os dados e textos começam preenchidos com o padrão da Clinimed, mas podem ser alterados em **Personalizar todo o modelo**.
 
 ## Como usar
 
@@ -47,4 +49,4 @@ Bibliotecas: [docx](https://github.com/dolanmiu/docx) 9.6.1 e [pdf-lib](https://
 
 O site não possui backend, login, envio de formulários ou armazenamento local dos dados preenchidos. CPF, CNPJ e informações dos trabalhadores são usados apenas na memória da aba para compor os arquivos baixados.
 
-A checagem de CPF/CNPJ confirma o formato e a quantidade de dígitos, não a situação cadastral dos documentos. Documentos com muitos períodos ou textos longos podem ocupar mais de uma página.
+A checagem de CPF/CNPJ confirma o formato e a quantidade de dígitos, não a situação cadastral dos documentos. Para evitar documentos cortados ou com duas páginas, o gerador limita a compactação e avisa quando o conteúdo precisa ser reduzido.

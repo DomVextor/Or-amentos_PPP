@@ -100,8 +100,56 @@
               <span>Data do orçamento <span class="required">*</span></span>
               <input id="issue-date" type="date" required />
             </label>
-            <p class="section-hint">A cidade permanece como Votuporanga, conforme o modelo original.</p>
+            <p class="section-hint">A cidade e os demais textos podem ser alterados na seção abaixo.</p>
           </fieldset>
+
+          <details class="customization" id="customization">
+            <summary>
+              <span class="section-number">06</span>
+              <span>Personalizar todo o modelo <small>Cabeçalho, descrições, rótulos, logomarca e rodapé</small></span>
+              <span class="customization__arrow" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="customization__content">
+              <h3>Identidade e contatos da Clinimed</h3>
+              <label class="field"><span>Logomarca (JPG ou PNG)</span><input id="custom-logo" type="file" accept="image/png,image/jpeg" /></label>
+              <label class="field"><span>Cor principal</span><input id="custom-color" type="color" value="#087d56" /></label>
+              <label class="field"><span>Identificação no cabeçalho</span><input id="setting-header" value="SEGURANÇA E MEDICINA DO TRABALHO" /></label>
+              <label class="field"><span>Telefones dos exames</span><input id="setting-exams" value="Fones Exames: 98204-6085 / 98103-3601" /></label>
+              <label class="field"><span>Contato comercial</span><input id="setting-commercial" value="Comercial: (17) 99633-3590" /></label>
+              <label class="field"><span>E-mail</span><input id="setting-email" value="clinimedsegurancavotu@gmail.com" /></label>
+
+              <h3>Título e dados do trabalhador</h3>
+              <label class="field"><span>Título do orçamento</span><input id="setting-title" value="ORÇAMENTO PARA ELABORAÇÃO DE PPP" /></label>
+              <label class="field"><span>Subtítulo</span><input id="setting-subtitle" value="Perfil Profissiográfico Previdenciário" /></label>
+              <label class="field"><span>Título da seção 1</span><input id="setting-section1" value="1. Dados do trabalhador e da empresa" /></label>
+              <div class="field-grid">
+                <label class="field"><span>Rótulo CNPJ</span><input id="setting-cnpj-label" value="CNPJ:" /></label>
+                <label class="field"><span>Rótulo empresa</span><input id="setting-company-label" value="Empresa:" /></label>
+                <label class="field"><span>Rótulo trabalhador</span><input id="setting-worker-label" value="Nome do trabalhador:" /></label>
+                <label class="field"><span>Rótulo CPF</span><input id="setting-cpf-label" value="CPF:" /></label>
+              </div>
+
+              <h3>Serviço, investimento e solicitante</h3>
+              <label class="field"><span>Título da seção 2</span><input id="setting-section2" value="2. Serviço solicitado" /></label>
+              <label class="field"><span>Nome do serviço</span><input id="setting-service" value="Elaboração de PPP - Perfil Profissiográfico Previdenciário" /></label>
+              <label class="field"><span>Descrição do serviço</span><textarea id="setting-description" rows="5">Documento com histórico laboral do trabalhador que presta serviço a uma determinada empresa, contendo informações administrativas, descrição das atividades, exposição a agentes nocivos à saúde, resultados de exames médicos, registros de CAT e demais dados necessários para composição do Perfil Profissiográfico Previdenciário.</textarea></label>
+              <label class="field"><span>Título da seção 3</span><input id="setting-section3" value="3. Investimento e períodos" /></label>
+              <div class="field-grid">
+                <label class="field"><span>Rótulo do valor</span><input id="setting-price-label" value="VALOR DO SERVIÇO" /></label>
+                <label class="field"><span>Rótulo dos períodos</span><input id="setting-periods-label" value="Períodos a considerar" /></label>
+              </div>
+              <label class="field"><span>Título da seção 4</span><input id="setting-section4" value="4. Responsável / solicitante" /></label>
+              <div class="field-grid">
+                <label class="field"><span>Rótulo solicitante</span><input id="setting-requester-label" value="Solicitante:" /></label>
+                <label class="field"><span>Rótulo contato</span><input id="setting-contact-label" value="Contato:" /></label>
+              </div>
+
+              <h3>Local e rodapé</h3>
+              <label class="field"><span>Cidade</span><input id="setting-city" value="Votuporanga" /></label>
+              <label class="field"><span>Rodapé</span><input id="setting-footer" value="CLINIMED - Segurança e Medicina do Trabalho" /></label>
+              <p class="section-hint">Todas as alterações aparecem na prévia e são levadas para o Word e para o PDF. Os textos originais voltam ao clicar em “Limpar formulário”.</p>
+            </div>
+          </details>
         </form>
 
         <div class="actions">
@@ -126,63 +174,65 @@
             <span class="eyebrow">VISUALIZAÇÃO EM TEMPO REAL</span>
             <h2 id="preview-title">Prévia do orçamento</h2>
           </div>
-          <span class="paper-tag">A4 · 1 página no modelo</span>
+          <span class="paper-tag">A4 · página única</span>
         </div>
 
         <div class="paper-scroll">
           <article class="paper" id="document-preview" aria-label="Prévia do documento em A4">
+            <div class="document-body" id="document-body">
             <div class="document-top">
               <img class="document-logo" src="./assets/clinimed-logo.jpg" alt="Clinimed Segurança do Trabalho" />
               <div class="document-contact">
-                <strong>SEGURANÇA E MEDICINA DO TRABALHO</strong>
-                <span>Fones Exames: 98204-6085 / 98103-3601</span>
-                <span>Comercial: (17) 99633-3590</span>
-                <span>clinimedsegurancavotu@gmail.com</span>
+                <strong id="view-header">SEGURANÇA E MEDICINA DO TRABALHO</strong>
+                <span id="view-exams">Fones Exames: 98204-6085 / 98103-3601</span>
+                <span id="view-commercial">Comercial: (17) 99633-3590</span>
+                <span id="view-email">clinimedsegurancavotu@gmail.com</span>
               </div>
             </div>
             <div class="document-rule"></div>
             <div class="document-title">
-              <strong>ORÇAMENTO PARA ELABORAÇÃO DE PPP</strong>
-              <span>Perfil Profissiográfico Previdenciário</span>
+              <strong id="view-title">ORÇAMENTO PARA ELABORAÇÃO DE PPP</strong>
+              <span id="view-subtitle">Perfil Profissiográfico Previdenciário</span>
             </div>
 
-            <h3 class="document-section-heading">1. Dados do trabalhador e da empresa</h3>
+            <h3 class="document-section-heading" id="view-section1">1. Dados do trabalhador e da empresa</h3>
             <div class="document-grid document-grid--data">
-              <div><b>CNPJ:</b> <strong id="view-cnpj" class="document-value">—</strong></div>
-              <div><b>Empresa:</b> <strong id="view-company" class="document-value">—</strong></div>
-              <div><b>Nome do trabalhador:</b> <strong id="view-worker" class="document-value">—</strong></div>
-              <div><b>CPF:</b> <strong id="view-cpf" class="document-value">—</strong></div>
+              <div><b id="view-cnpj-label">CNPJ:</b> <strong id="view-cnpj" class="document-value">—</strong></div>
+              <div><b id="view-company-label">Empresa:</b> <strong id="view-company" class="document-value">—</strong></div>
+              <div><b id="view-worker-label">Nome do trabalhador:</b> <strong id="view-worker" class="document-value">—</strong></div>
+              <div><b id="view-cpf-label">CPF:</b> <strong id="view-cpf" class="document-value">—</strong></div>
             </div>
 
-            <h3 class="document-section-heading">2. Serviço solicitado</h3>
+            <h3 class="document-section-heading" id="view-section2">2. Serviço solicitado</h3>
             <div class="document-service">
-              <strong>Elaboração de PPP - Perfil Profissiográfico Previdenciário</strong>
-              <p>Documento com histórico laboral do trabalhador que presta serviço a uma determinada empresa, contendo informações administrativas, descrição das atividades, exposição a agentes nocivos à saúde, resultados de exames médicos, registros de CAT e demais dados necessários para composição do Perfil Profissiográfico Previdenciário.</p>
+              <strong id="view-service">Elaboração de PPP - Perfil Profissiográfico Previdenciário</strong>
+              <p id="view-description">Documento com histórico laboral do trabalhador que presta serviço a uma determinada empresa, contendo informações administrativas, descrição das atividades, exposição a agentes nocivos à saúde, resultados de exames médicos, registros de CAT e demais dados necessários para composição do Perfil Profissiográfico Previdenciário.</p>
             </div>
 
-            <h3 class="document-section-heading">3. Investimento e períodos</h3>
+            <h3 class="document-section-heading" id="view-section3">3. Investimento e períodos</h3>
             <div class="document-investment">
               <div class="document-investment__value">
-                <strong>VALOR DO SERVIÇO</strong>
+                <strong id="view-price-label">VALOR DO SERVIÇO</strong>
                 <div><b id="view-total">R$ 100,00</b> <span id="view-calculation">(R$ 100,00 x 1)</span></div>
               </div>
               <div class="document-investment__periods">
-                <strong>Períodos a considerar</strong>
+                <strong id="view-periods-label">Períodos a considerar</strong>
                 <div id="view-periods"></div>
               </div>
             </div>
 
-            <h3 class="document-section-heading">4. Responsável / solicitante</h3>
+            <h3 class="document-section-heading" id="view-section4">4. Responsável / solicitante</h3>
             <div class="document-grid document-grid--requester">
-              <div><b>Solicitante:</b><span id="view-requester">—</span></div>
-              <div><b>Contato:</b><span id="view-phone">—</span></div>
+              <div><b id="view-requester-label">Solicitante:</b><span id="view-requester">—</span></div>
+              <div><b id="view-contact-label">Contato:</b><span id="view-phone">—</span></div>
             </div>
 
             <p class="document-date" id="view-date">Votuporanga, —.</p>
-            <footer class="document-footer">CLINIMED - Segurança e Medicina do Trabalho</footer>
+            </div>
+            <footer class="document-footer" id="view-footer">CLINIMED - Segurança e Medicina do Trabalho</footer>
           </article>
         </div>
-        <p class="preview-note">Os arquivos reproduzem o modelo da Clinimed. A prévia pode ocupar mais páginas quando houver muitos períodos ou textos longos.</p>
+        <p class="preview-note" id="page-fit-status" role="status" aria-live="polite">A prévia e os arquivos serão ajustados para uma única página A4.</p>
       </section>
     </main>
 
