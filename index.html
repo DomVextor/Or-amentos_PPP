@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#087d56" />
+    <meta name="description" content="Gerador de orçamentos de PPP da Clinimed em Word e PDF." />
+    <title>Orçamentos PPP | Clinimed</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="app-header__brand">
+        <span class="brand-mark" aria-hidden="true">+</span>
+        <div>
+          <span class="eyebrow eyebrow--light">CLINIMED</span>
+          <h1>Gerador de orçamentos PPP</h1>
+        </div>
+      </div>
+      <span class="app-header__detail"><span class="status-dot"></span> Documentos Word e PDF</span>
+    </header>
+
+    <main class="app-layout">
+      <section class="form-panel" aria-labelledby="form-title">
+        <div class="panel-intro">
+          <div>
+            <span class="eyebrow">ORÇAMENTO PERSONALIZADO</span>
+            <h2 id="form-title">Preencha os dados</h2>
+            <p>As informações aparecem no documento ao lado enquanto você digita.</p>
+          </div>
+          <span class="step-pill">Campos editáveis</span>
+        </div>
+
+        <form id="quote-form" novalidate>
+          <fieldset class="form-section">
+            <legend><span class="section-number">01</span> Empresa</legend>
+            <div class="field-grid">
+              <label class="field">
+                <span>CNPJ <span class="required">*</span></span>
+                <input id="company-cnpj" autocomplete="off" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required />
+              </label>
+              <label class="field">
+                <span>Razão social <span class="required">*</span></span>
+                <input id="company-name" autocomplete="organization" maxlength="160" placeholder="Nome da empresa" required />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section">
+            <legend><span class="section-number">02</span> Trabalhador</legend>
+            <div class="field-grid">
+              <label class="field">
+                <span>Nome completo <span class="required">*</span></span>
+                <input id="worker-name" autocomplete="off" maxlength="130" placeholder="Nome do trabalhador" required />
+              </label>
+              <label class="field">
+                <span>CPF <span class="required">*</span></span>
+                <input id="worker-cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" required />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section">
+            <legend><span class="section-number">03</span> Períodos e investimento</legend>
+            <p class="section-hint">Informe os períodos considerados no PPP. O valor padrão é de R$ 100,00 por período e pode ser alterado.</p>
+            <div id="periods-container" class="periods-container"></div>
+            <button type="button" class="text-button" id="add-period">
+              <span aria-hidden="true">＋</span> Adicionar período
+            </button>
+            <div class="price-panel">
+              <label class="field field--price">
+                <span>Valor por período (R$)</span>
+                <input id="unit-price" value="100,00" inputmode="decimal" placeholder="100,00" />
+              </label>
+              <div class="price-panel__total">
+                <span>Investimento total</span>
+                <strong id="form-total">R$ 100,00</strong>
+                <small id="form-formula">R$ 100,00 × 1 período</small>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section">
+            <legend><span class="section-number">04</span> Solicitante</legend>
+            <div class="field-grid">
+              <label class="field">
+                <span>Nome do solicitante <span class="required">*</span></span>
+                <input id="requester-name" maxlength="130" placeholder="Nome do responsável" required />
+              </label>
+              <label class="field">
+                <span>Telefone de contato <span class="required">*</span></span>
+                <input id="requester-phone" inputmode="tel" maxlength="16" placeholder="(17) 99999-9999" required />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-section form-section--last">
+            <legend><span class="section-number">05</span> Emissão</legend>
+            <label class="field field--date">
+              <span>Data do orçamento <span class="required">*</span></span>
+              <input id="issue-date" type="date" required />
+            </label>
+            <p class="section-hint">A cidade permanece como Votuporanga, conforme o modelo original.</p>
+          </fieldset>
+        </form>
+
+        <div class="actions">
+          <div class="actions__buttons">
+            <button class="button button--primary" id="download-word" type="button">
+              <span class="button__icon" aria-hidden="true">W</span> Baixar Word
+            </button>
+            <button class="button button--secondary" id="download-pdf" type="button">
+              <span class="button__icon" aria-hidden="true">↓</span> Baixar PDF
+            </button>
+          </div>
+          <div class="actions__footer">
+            <span id="status" role="status" aria-live="polite">Preencha os campos obrigatórios para gerar.</span>
+            <button class="reset-button" type="button" id="reset-form">Limpar formulário</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-panel" aria-labelledby="preview-title">
+        <div class="preview-toolbar">
+          <div>
+            <span class="eyebrow">VISUALIZAÇÃO EM TEMPO REAL</span>
+            <h2 id="preview-title">Prévia do orçamento</h2>
+          </div>
+          <span class="paper-tag">A4 · 1 página no modelo</span>
+        </div>
+
+        <div class="paper-scroll">
+          <article class="paper" id="document-preview" aria-label="Prévia do documento em A4">
+            <div class="document-top">
+              <img class="document-logo" src="./assets/clinimed-logo.jpg" alt="Clinimed Segurança do Trabalho" />
+              <div class="document-contact">
+                <strong>SEGURANÇA E MEDICINA DO TRABALHO</strong>
+                <span>Fones Exames: 98204-6085 / 98103-3601</span>
+                <span>Comercial: (17) 99633-3590</span>
+                <span>clinimedsegurancavotu@gmail.com</span>
+              </div>
+            </div>
+            <div class="document-rule"></div>
+            <div class="document-title">
+              <strong>ORÇAMENTO PARA ELABORAÇÃO DE PPP</strong>
+              <span>Perfil Profissiográfico Previdenciário</span>
+            </div>
+
+            <h3 class="document-section-heading">1. Dados do trabalhador e da empresa</h3>
+            <div class="document-grid document-grid--data">
+              <div><b>CNPJ:</b> <strong id="view-cnpj" class="document-value">—</strong></div>
+              <div><b>Empresa:</b> <strong id="view-company" class="document-value">—</strong></div>
+              <div><b>Nome do trabalhador:</b> <strong id="view-worker" class="document-value">—</strong></div>
+              <div><b>CPF:</b> <strong id="view-cpf" class="document-value">—</strong></div>
+            </div>
+
+            <h3 class="document-section-heading">2. Serviço solicitado</h3>
+            <div class="document-service">
+              <strong>Elaboração de PPP - Perfil Profissiográfico Previdenciário</strong>
+              <p>Documento com histórico laboral do trabalhador que presta serviço a uma determinada empresa, contendo informações administrativas, descrição das atividades, exposição a agentes nocivos à saúde, resultados de exames médicos, registros de CAT e demais dados necessários para composição do Perfil Profissiográfico Previdenciário.</p>
+            </div>
+
+            <h3 class="document-section-heading">3. Investimento e períodos</h3>
+            <div class="document-investment">
+              <div class="document-investment__value">
+                <strong>VALOR DO SERVIÇO</strong>
+                <div><b id="view-total">R$ 100,00</b> <span id="view-calculation">(R$ 100,00 x 1)</span></div>
+              </div>
+              <div class="document-investment__periods">
+                <strong>Períodos a considerar</strong>
+                <div id="view-periods"></div>
+              </div>
+            </div>
+
+            <h3 class="document-section-heading">4. Responsável / solicitante</h3>
+            <div class="document-grid document-grid--requester">
+              <div><b>Solicitante:</b><span id="view-requester">—</span></div>
+              <div><b>Contato:</b><span id="view-phone">—</span></div>
+            </div>
+
+            <p class="document-date" id="view-date">Votuporanga, —.</p>
+            <footer class="document-footer">CLINIMED - Segurança e Medicina do Trabalho</footer>
+          </article>
+        </div>
+        <p class="preview-note">Os arquivos reproduzem o modelo da Clinimed. A prévia pode ocupar mais páginas quando houver muitos períodos ou textos longos.</p>
+      </section>
+    </main>
+
+    <template id="period-template">
+      <div class="period-card">
+        <div class="period-card__heading">
+          <strong class="period-label">Período</strong>
+          <button class="remove-period" type="button" aria-label="Remover período">Remover</button>
+        </div>
+        <div class="period-dates">
+          <label class="field"><span>Data inicial <span class="required">*</span></span><input class="period-start" type="date" required /></label>
+          <label class="field"><span>Data final</span><input class="period-end" type="date" /></label>
+        </div>
+        <label class="current-period"><input class="period-current" type="checkbox" /> Até a atualidade</label>
+      </div>
+    </template>
+
+    <script src="./vendor/docx.iife.js" defer></script>
+    <script src="./vendor/pdf-lib.min.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
