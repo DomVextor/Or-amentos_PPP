@@ -37,10 +37,13 @@
   function anchor(page, re) {
     const direct=page.spans.find(s=>re.test(normalized(s.text)));
     if(direct)return direct;
+    // Um leitor de PDF pode separar "4 - Nome do Trabalhador" em 5+ pedaços.
+    // Procurar apenas quatro fazia o nome inteiro desaparecer da importação.
     for(const line of page.lines){
       for(let i=0;i<line.spans.length;i++){
-        const text=line.spans.slice(i,i+4).map(s=>s.text).join(" ");
-        if(re.test(normalized(text)))return line.spans[i];
+        const text=line.spans.slice(i,i+14).map(s=>s.text).join(" ");
+        const match=re.exec(normalized(text));
+        if(match && match.index===0)return line.spans[i];
       }
     }
     return null;
@@ -52,6 +55,30 @@
     return clean(page.spans.filter(s=>s.x>=label.x-5&&s.x<endX&&s.y>=label.y+6&&s.y<endY)
       .sort((a,b)=>a.y-b.y||a.x-b.x).map(s=>s.text).join(" "));
   }
+  function extractWorkerName(page, label, nextLabel, bottomLabel) {
+    if(!label)return "";
+    // Algumas versões de PPP trazem nome e rótulo no mesmo fragmento.
+    const inline=/\bnome\s+do\s+trabalhador\s*[:\-]?\s+(.+)$/i.exec(label.text);
+    if(inline && !/^\d+\s*[-–.]|^br\s*\/\s*pdh/i.test(inline[1])){
+      return clean(inline[1]);
+    }
+    // Restringe a coleta à célula 4, antes da coluna BR/PDH e do campo 7.
+    // Não depende de um deslocamento vertical rígido de seis pontos.
+    const right=nextLabel && Math.abs(nextLabel.y-label.y)<30
+      ? nextLabel.x-4 : label.x+180;
+    const bottom=bottomLabel?.y && bottomLabel.y>label.y
+      ? bottomLabel.y-2 : label.y+47;
+    const parts=page.spans.filter(item=>
+      item.x>=label.x-5 && item.x<right &&
+      item.y>label.y+0.5 && item.y<Math.min(bottom,label.y+47)
+    ).sort((a,b)=>a.y-b.y||a.x-b.x).filter(item=>{
+      const t=normalized(item.text);
+      return t && !/^(?:\d+\s*[-–.]\s*)?(?:nome(?:\s+do\s+trabalhador)?|trabalhador)$/.test(t) &&
+        !/^(?:\d+\s*[-–.]|n\.?a\.?$|\d{2}\/\d{2}\/\d{4}$)/.test(t);
+    });
+    return clean(parts.map(item=>item.text).join(" "));
+  }
+
   function findPeriods(page, firstRe, nextRe, endRe) {
     const label=anchor(page,firstRe);
     if(!label)return [];
@@ -96,7 +123,7 @@
     const cnpjText=cell(first,c1,c2,w4,44);
     const cpfText=cell(first,p6,null,d7,35);
     out.company=cell(first,c2,c3,w4,44).replace(/\s+\d{2}\.\d{2}-\d-\d{2}$/,"");
-    out.worker=cell(first,w4,b5,d7,35);
+    out.worker=extractWorkerName(first,w4,b5,d7);
     out.cnpj=clean(cnpjText.match(cnpjPattern)?.[0]||"").replace(/\s/g,"");
     out.cpf=clean(cpfText.match(cpfPattern)?.[0]||"").replace(/\s/g,"");
     const before13=anchor(first,/\b13\s*[-–.]\s*lotacao/);
