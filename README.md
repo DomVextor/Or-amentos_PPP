@@ -2,6 +2,12 @@
 
 Site estático em **HTML, CSS e JavaScript** para preencher e exportar orçamentos de elaboração de PPP (Perfil Profissiográfico Previdenciário), seguindo o modelo Word da Clinimed.
 
+## Importação automática de PPP em PDF
+
+Na primeira seção do site, selecione um **PPP pesquisável (.pdf)** e clique em **Extrair dados do PPP**. Uma revisão exibe o nome empresarial, CNPJ, nome do trabalhador, CPF e os períodos identificados nas seções 13.1 (lotação e atribuição) ou 14.1 (profissiografia). Confirme e clique em **Aplicar dados ao orçamento**. O cálculo do valor por período será atualizado automaticamente.
+
+A importação usa **PDF.js** no navegador (carregado via CDN) e não envia o arquivo a um servidor. Um PDF digitalizado apenas como imagem, sem texto pesquisável, não pode ser interpretado por esta versão; não há OCR. Alguns layouts de PPP podem exigir revisão e preenchimento manual. Solicitante e telefone não são inferidos a partir do responsável técnico ou representante legal.
+
 ## Funcionalidades
 
 - Campos para CNPJ, razão social, nome e CPF do trabalhador.
