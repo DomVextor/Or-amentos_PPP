@@ -31,6 +31,26 @@
           <span class="step-pill">Campos editáveis</span>
         </div>
 
+        <section class="ppp-upload" aria-labelledby="ppp-upload-title">
+          <div class="ppp-upload__heading">
+            <span class="section-number">PDF</span>
+            <div><h3 id="ppp-upload-title">Preencher com PPP</h3>
+              <p>Envie um PPP pesquisável para identificar automaticamente os dados do orçamento.</p>
+            </div>
+          </div>
+          <label class="field"><span>Selecione o PPP (PDF, até 25 MB)</span>
+            <input id="ppp-file" type="file" accept=".pdf,application/pdf" /></label>
+          <button type="button" id="ppp-extract" class="button button--secondary">Extrair dados do PPP</button>
+          <div id="ppp-review" class="ppp-review" hidden>
+            <strong>Confira as informações extraídas</strong>
+            <p id="ppp-review-source"></p>
+            <dl id="ppp-review-fields"></dl>
+            <p id="ppp-review-warning" class="ppp-review__warning"></p>
+            <button type="button" id="ppp-apply" class="button button--primary">Aplicar dados ao orçamento</button>
+          </div>
+          <p class="section-hint">A leitura ocorre no navegador. O PDF não é enviado ao servidor. Confirme todos os dados antes de emitir.</p>
+        </section>
+
         <form id="quote-form" novalidate>
           <fieldset class="form-section">
             <legend><span class="section-number">01</span> Empresa</legend>
@@ -252,6 +272,8 @@
 
     <script src="./vendor/docx.iife.js" defer></script>
     <script src="./vendor/pdf-lib.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
     <script src="./app.js" defer></script>
+    <script src="./ppp-import.js" defer></script>
   </body>
 </html>
