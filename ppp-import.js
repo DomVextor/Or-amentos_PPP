@@ -34,51 +34,72 @@
       return {spans,lines};
     });
   }
+  // Cada nome é lido de sua própria célula na tabela administrativa.
+  // PDF.js pode fragmentar os rótulos em muitos pedaços.
   function anchor(page, re) {
     const direct=page.spans.find(s=>re.test(normalized(s.text)));
     if(direct)return direct;
-    // Um leitor de PDF pode separar "4 - Nome do Trabalhador" em 5+ pedaços.
-    // Procurar apenas quatro fazia o nome inteiro desaparecer da importação.
-    for(const line of page.lines){
-      for(let i=0;i<line.spans.length;i++){
-        const text=line.spans.slice(i,i+14).map(s=>s.text).join(" ");
-        const match=re.exec(normalized(text));
-        if(match && match.index===0)return line.spans[i];
+    for(const line of page.lines) {
+      for(let i=0;i<line.spans.length;i++) {
+        let combined="";
+        for(const piece of line.spans.slice(i,i+18)) {
+          combined+=(combined?" ":"")+piece.text;
+          const match=re.exec(normalized(combined));
+          if(match&&match.index===0)return line.spans[i];
+        }
       }
     }
     return null;
   }
-  function cell(page, label, next, bottom, maxHeight=42){
-    if(!label)return "";
-    const endX=next?next.x-3:Infinity;
-    const endY=Math.min(label.y+maxHeight,bottom?.y?bottom.y-3:Infinity);
-    return clean(page.spans.filter(s=>s.x>=label.x-5&&s.x<endX&&s.y>=label.y+6&&s.y<endY)
-      .sort((a,b)=>a.y-b.y||a.x-b.x).map(s=>s.text).join(" "));
+  function headerTop(points,fallback) {
+    const values=points.filter(Boolean).map(p=>p.y);
+    return values.length?Math.min(...values):fallback;
   }
-  function extractWorkerName(page, label, nextLabel, bottomLabel) {
-    if(!label)return "";
-    // Algumas versões de PPP trazem nome e rótulo no mesmo fragmento.
-    const inline=/\bnome\s+do\s+trabalhador\s*[:\-]?\s+(.+)$/i.exec(label.text);
-    if(inline && !/^\d+\s*[-–.]|^br\s*\/\s*pdh/i.test(inline[1])){
-      return clean(inline[1]);
-    }
-    // Restringe a coleta à célula 4, antes da coluna BR/PDH e do campo 7.
-    // Não depende de um deslocamento vertical rígido de seis pontos.
-    const right=nextLabel && Math.abs(nextLabel.y-label.y)<30
-      ? nextLabel.x-4 : label.x+180;
-    const bottom=bottomLabel?.y && bottomLabel.y>label.y
-      ? bottomLabel.y-2 : label.y+47;
-    const parts=page.spans.filter(item=>
-      item.x>=label.x-5 && item.x<right &&
-      item.y>label.y+0.5 && item.y<Math.min(bottom,label.y+47)
-    ).sort((a,b)=>a.y-b.y||a.x-b.x).filter(item=>{
-      const t=normalized(item.text);
-      return t && !/^(?:\d+\s*[-–.]\s*)?(?:nome(?:\s+do\s+trabalhador)?|trabalhador)$/.test(t) &&
-        !/^(?:\d+\s*[-–.]|n\.?a\.?$|\d{2}\/\d{2}\/\d{4}$)/.test(t);
-    });
-    return clean(parts.map(item=>item.text).join(" "));
+  function isFieldHeader(text) {
+    return /^(?:\d{1,2}(?:\.\d+)?\s*[-–.]\s*(?:nome|cnpj|cpf|cnae|br|data|sexo|matricula|regime|funcao|cargo|periodo|lotacao)|(?:nome\s+do\s+trabalhador|nome\s+empresarial|br\s*\/\s*pdh)\s*:?)/i.test(normalized(text));
   }
-
+  function cellContent(page,left,right,top,bottom) {
+    if(![left,right,top,bottom].every(Number.isFinite))return "";
+    return clean(page.spans.filter(s=>s.x>=left-5&&s.x<right-3&&s.y>=top-0.8&&s.y<bottom-1)
+      .sort((a,b)=>a.y-b.y||a.x-b.x)
+      .filter(s=>!isFieldHeader(s.text)&&!/^\s*(?:n\.?a\.?|n\/a)\s*$/i.test(s.text))
+      .map(s=>s.text).join(" "));
+  }
+  function plausiblePersonName(name) {
+    const t=normalized(name);
+    if(!t||!/^[a-z]/i.test(t)||!/[a-z]+\s+[a-z]+/i.test(t))return false;
+    if(/\b(?:cnpj|cpf|cnae|trabalhador|empresarial|nascimento|regime|matricula|representante|responsavel|br\s*\/\s*pdh)\b/i.test(t))return false;
+    if(/\d/.test(t)||/[;|]/.test(t))return false;
+    return true;
+  }
+  function extractAdministrativeFields(page, anchors) {
+    const {c1,c2,c3,w4,b5,p6,d7,s8,a10}=anchors;
+    const top1=headerTop([c1,c2,c3],145);
+    const top2=headerTop([w4,b5,p6],top1+42);
+    const top3=headerTop([d7,s8,a10],top2+27);
+    const y1=Math.min(top2,top1+55);
+    const y2=Math.min(top3,top2+53);
+    const firstX=c1?.x??w4?.x??27;
+    const secondX=c2?.x??b5?.x??207;
+    const thirdX=c3?.x??p6?.x??445;
+    const nameRight=b5?.x&&b5.x>firstX+70?b5.x:secondX;
+    // Empresa: somente linha 1, coluna 2; Trabalhador: somente linha 2, coluna 1.
+    const company=c2?cellContent(page,c2.x,thirdX,top1+3,y1):"";
+    const candidate=cellContent(page,w4?.x??firstX,nameRight,top2+2,y2);
+    const inline=w4?.text.match(/nome\s+do\s+trabalhador\s*:\s*(.+)$/i);
+    const worker=plausiblePersonName(candidate)?candidate:
+      inline&&plausiblePersonName(inline[1])?clean(inline[1]):"";
+    const cnpjText=cellContent(page,firstX,secondX,top1+3,y1);
+    const cpfText=cellContent(page,p6?.x??thirdX,595,top2+2,y2);
+    const cnpjPattern=/\b\d{2}\s*\.\s*\d{3}\s*\.\s*\d{3}\s*\/\s*\d{4}\s*-\s*\d{2}\b/;
+    const cpfPattern=/\b\d{3}\s*\.\s*\d{3}\s*\.\s*\d{3}\s*-\s*\d{2}\b/;
+    return {
+      company:company&&!/\b(?:nome\s+do\s+trabalhador|br\s*\/\s*pdh|cpf:)\b/i.test(company)?company:"",
+      worker,
+      cnpj:clean(cnpjText.match(cnpjPattern)?.[0]||"").replace(/\s/g,""),
+      cpf:clean(cpfText.match(cpfPattern)?.[0]||"").replace(/\s/g,"")
+    };
+  }
   function findPeriods(page, firstRe, nextRe, endRe) {
     const label=anchor(page,firstRe);
     if(!label)return [];
@@ -120,12 +141,13 @@
     const d7=anchor(first,/\b7\s*[-–.]\s*data\s+de/);
     const cnpjPattern=/\b\d{2}\s*\.\s*\d{3}\s*\.\s*\d{3}\s*\/\s*\d{4}\s*-\s*\d{2}\b/;
     const cpfPattern=/\b\d{3}\s*\.\s*\d{3}\s*\.\s*\d{3}\s*-\s*\d{2}\b/;
-    const cnpjText=cell(first,c1,c2,w4,44);
-    const cpfText=cell(first,p6,null,d7,35);
-    out.company=cell(first,c2,c3,w4,44).replace(/\s+\d{2}\.\d{2}-\d-\d{2}$/,"");
-    out.worker=extractWorkerName(first,w4,b5,d7);
-    out.cnpj=clean(cnpjText.match(cnpjPattern)?.[0]||"").replace(/\s/g,"");
-    out.cpf=clean(cpfText.match(cpfPattern)?.[0]||"").replace(/\s/g,"");
+    const s8=anchor(first,/\b8\s*[-–.]\s*sexo\b/);
+    const a10=anchor(first,/\b10\s*[-–.]\s*data\s+de\s+admissao/);
+    const admin=extractAdministrativeFields(first,{c1,c2,c3,w4,b5,p6,d7,s8,a10});
+    out.company=admin.company;
+    out.cnpj=admin.cnpj;
+    out.worker=admin.worker;
+    out.cpf=admin.cpf;
     const before13=anchor(first,/\b13\s*[-–.]\s*lotacao/);
     const administrativeText=first.spans.filter(s=>s.y<(before13?.y||500)).map(s=>s.text).join(" ");
     if(!out.cnpj)out.cnpj=(administrativeText.match(cnpjPattern)?.[0]||"").replace(/\s/g,"");
