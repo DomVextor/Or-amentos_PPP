@@ -267,3 +267,22 @@ button:disabled { opacity: .6; cursor: wait; }
   .paper { width: 210mm; min-height: 297mm; box-shadow: none; margin: 0; }
   @page { size: A4; margin: 0; }
 }
+
+/* Importação de PPP — revisão antes de preencher o orçamento */
+.ppp-upload {padding:22px 31px;background:#f4faf6;border-bottom:1px solid #dcebe1;display:grid;gap:12px;}
+.ppp-upload__heading {display:flex;gap:10px;align-items:flex-start;}
+.ppp-upload__heading h3 {margin:2px 0 5px;font-size:16px;}
+.ppp-upload__heading p {margin:0;color:var(--muted);font-size:12px;line-height:1.5;}
+.ppp-upload .button {width:100%;}
+.ppp-upload .section-hint {margin:0;font-size:11px;}
+.ppp-review {background:white;border:1px solid #c9dcd1;border-radius:12px;padding:16px;overflow-wrap:anywhere;}
+.ppp-review[hidden] {display:none;}
+.ppp-review > strong {font-size:13px;color:var(--green);}
+.ppp-review > p {font-size:11px;color:var(--muted);line-height:1.5;}
+.ppp-review dl {margin:12px 0;display:grid;gap:9px;}
+.ppp-review dl > div {border-bottom:1px solid #edf2ee;padding-bottom:8px;}
+.ppp-review dt {font-size:11px;font-weight:700;color:#66796c;margin-bottom:3px;}
+.ppp-review dd {margin:0;font-size:12px;font-weight:600;color:#203e31;}
+.ppp-review dd.review-missing {color:#af5648;}
+.ppp-review__warning {padding:8px;background:#fff8e8;border-radius:7px;}
+@media (max-width:650px){.ppp-upload {padding:18px;}}
